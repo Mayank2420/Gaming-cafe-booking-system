@@ -515,197 +515,74 @@ container.innerHTML = html;
 
 
 // BOOK NOW
-function bookNow(
-gameName,
-price,
-slotId,
-gameCategory,
-){
-
-const slot =
-document.getElementById(
-slotId
-)?.value;
-
-
-// SLOT CHECK
-if(!slot){
-
-alert(
-'Please select a time slot first!'
-);
-
-return;
-
+async function bookNow(gameName, price, slotId, gameCategory) {
+  const slot = document.getElementById(slotId)?.value;
+  if (!slot) { alert('Please select a time slot first!'); return; }
+  const userName = document.getElementById('userName').value;
+  const userPhone = document.getElementById('userPhone').value;
+  if (!userName || !userPhone) { alert('Please enter your details'); return; }
+  const bookingDate = document.getElementById('bookingDate').value;
+  if (!bookingDate) { alert('Please select booking date'); return; }
+  const seat = gameName.replace(/\s+/g, '') + '-1';
+  try {
+    const lockRes = await fetch(`${API_BASE}/bookings/lock`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: userName, phone: userPhone,
+        game: gameName, category: gameCategory,
+        seat: seat, slot: slot,
+        date: bookingDate, amount: price
+      })
+    });
+    const lockData = await lockRes.json();
+    if (lockData.message === 'Slot Already Reserved') {
+      alert('❌ This slot is already reserved!');
+      return;
+    }
+    const bookingId = lockData.booking._id;
+    localStorage.setItem('bookingId', bookingId);
+    const orderRes = await fetch(`${API_BASE}/payment/order`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount: price })
+    });
+    if (!orderRes.ok) { alert('Payment server error: ' + orderRes.status); return; }
+    const order = await orderRes.json();
+    if (!order.id) { alert('Order create nahi hua: ' + JSON.stringify(order)); return; }
+    if (!window.Razorpay) { alert('Razorpay SDK not loaded!'); return; }
+    const options = {
+      key: 'rzp_test_Syg9vPd6Lx0MGF',
+      amount: order.amount,
+      currency: order.currency,
+      order_id: order.id,
+      name: 'Gaming Junction',
+      description: `${gameName} — ${slot}`,
+      handler: async function (response) {
+        const verifyRes = await fetch(`${API_BASE}/payment/verify`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(response)
+        });
+        const result = await verifyRes.json();
+        if (result.success) {
+          await fetch(`${API_BASE}/bookings/confirm/${bookingId}`, { method: 'PUT' });
+          alert(`✅ Booking Confirmed!\n\n🎮 Game: ${gameName}\n📅 Date: ${bookingDate}\n⏰ Slot: ${slot}`);
+        } else {
+          alert('❌ Payment verify nahi hua!');
+        }
+      }
+    };
+    const rzp = new Razorpay(options);
+    rzp.on('payment.failed', function (response) {
+      alert('Payment Failed: ' + response.error.description);
+    });
+    rzp.open();
+  } catch (err) {
+    console.error(err);
+    alert('Error: ' + err.message);
+  }
 }
-
-
-// USER VALIDATION
-const userName =
-document.getElementById(
-'userName'
-).value;
-
-const userPhone =
-document.getElementById(
-'userPhone'
-).value;
-
-if(!userName || !userPhone){
-
-alert(
-'Please enter your details'
-);
-
-return;
-
-}
-
-
-// DATE CHECK
-const bookingDate =
-document.getElementById(
-'bookingDate'
-).value;
-
-if(!bookingDate){
-
-alert(
-'Please select booking date'
-);
-
-return;
-
-}
-
-
-// AUTO SEAT
-const seat =
-gameName.replace(/\s+/g,'')
-+ '-1';
-
-
-// LOCK SLOT
-fetch(
-
-`${API_BASE}/bookings/lock`,
-
-{
-
-method:'POST',
-
-headers:{
-'Content-Type':'application/json'
-},
-
-body:JSON.stringify({
-
-name:userName,
-phone:userPhone,
-
-game:gameName,
-category:gameCategory,
-
-seat:seat,
-slot:slot,
-date:bookingDate,
-amount:price
-
-})
-
-}
-
-)
-
-.then(res=>res.json())
-
-.then(async(data)=>{
-
-
-// SLOT RESERVED
-if(
-data.message ===
-'Slot Already Reserved'
-){
-
-alert(
-'❌ This slot is already reserved by another user.'
-);
-
-return;
-
-}
-
-
-// SAVE ID
-localStorage.setItem(
-
-'bookingId',
-
-data.booking._id
-
-);
-
-
-// DEMO MODE DIRECT CONFIRM
-
-if(confirm(
-
-`⚡ Demo Booking
-
-Game: ${gameName}
-
-Slot: ${slot}
-
-Date: ${bookingDate}
-
-Amount: ₹${price}
-
-Confirm Booking?`
-
-)){
-
-const bookingId =
-localStorage.getItem(
-'bookingId'
-);
-
-await fetch(
-
-`${API_BASE}/bookings/confirm/${bookingId}`,
-
-{
-method:'PUT'
-}
-
-);
-
-alert(
-
-`✅ Booking Confirmed!
-
-🎮 Game: ${gameName}
-
-📅 Date: ${bookingDate}
-
-⏰ Slot: ${slot}`
-
-);
-
-}
-
-})
-
-.catch(err=>{
-
-console.log(err);
-
-alert('Server Error');
-
-});
-
-}
-
 
 // INIT
 loadGames();

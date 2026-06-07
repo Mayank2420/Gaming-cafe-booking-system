@@ -63,6 +63,19 @@ alert('Booking Successful');
 }
 };
 
+console.log("Opening Razorpay...", options);
+
+if (!window.Razorpay) {
+  alert("Razorpay SDK not loaded!");
+  return;
+}
+
 const rzp = new Razorpay(options);
+
+rzp.on('payment.failed', function (response) {
+  console.log(response.error);
+  alert("Payment Failed");
+});
+
 rzp.open();
 }
