@@ -297,7 +297,7 @@ try{
 
 const res =
 await fetch(
-`${API_BASE}/api/games/all`
+`${API_BASE}/games/all`
 );
 
 if(!res.ok){
@@ -588,7 +588,7 @@ gameName.replace(/\s+/g,'')
 // LOCK SLOT
 fetch(
 
-`${API_BASE}/api/bookings/lock`,
+`${API_BASE}/bookings/lock`,
 
 {
 
@@ -672,7 +672,7 @@ localStorage.getItem(
 
 await fetch(
 
-`${API_BASE}/api/bookings/confirm/${bookingId}`,
+`${API_BASE}/bookings/confirm/${bookingId}`,
 
 {
 method:'PUT'

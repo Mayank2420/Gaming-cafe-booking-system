@@ -43,7 +43,7 @@ async function addGame() {
   }
 
   try {
-    await apiFetch('/api/games/add', {
+    await apiFetch('/games/add', {
       method: 'POST',
       body: JSON.stringify({ title, category, price, time })
     });
@@ -65,12 +65,12 @@ async function addGame() {
 
 // Called by delete button in game catalogue
 async function deleteGame(id) {
-  if (!confirm('Is game ko catalogue se remove karein?')) return;
+  if (!confirm('Remove this game from catalogue?')) return;
   try {
-    await apiFetch(`/api/games/${id}`, { method: 'DELETE' });
+    await apiFetch(`/games/${id}`, { method: 'DELETE' });
     renderAll();
   } catch (err) {
-    alert('Delete nahi hua: ' + err.message);
+    alert('Game not removed: ' + err.message);
   }
 }
 
@@ -79,7 +79,7 @@ async function deleteGame(id) {
 // ══════════════════════════════════════════════
 async function fetchBookings() {
   try {
-    return await apiFetch('/api/bookings/all');
+    return await apiFetch('/bookings/all');
   } catch (err) {
     console.error('Bookings fetch error:', err);
     return [];
