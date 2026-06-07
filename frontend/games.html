@@ -559,6 +559,7 @@ async function bookNow(gameName, price, slotId, gameCategory) {
       name: 'Gaming Junction',
       description: `${gameName} — ${slot}`,
       handler: async function (response) {
+        const bookingId = localStorage.getItem('bookingId');
         const verifyRes = await fetch(`${API_BASE}/payment/verify`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
