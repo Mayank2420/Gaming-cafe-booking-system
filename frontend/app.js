@@ -2,7 +2,7 @@ async function lockSlot(){
 
 const res = await fetch(
 
-'http://localhost:5000/api/bookings/lock',
+'https://gaming-cafe-booking-system.onrender.com/api/bookings/lock',
 
 {
 

@@ -58,5 +58,7 @@ console.log(
 console.log(err);
 
 }
-
+app.get('/', (req, res) => {
+  res.send('Gaming Cafe API is running');
+});
 },60000);

@@ -12,7 +12,7 @@ const password =
 document.getElementById('password').value;
 
 const res = await fetch(
-'http://localhost:5000/api/admin/login',
+'https://gaming-cafe-booking-system.onrender.com/api/admin/login',
 {
 method:'POST',
 
