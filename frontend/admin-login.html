@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login — Gaming Cafe</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  .login-wrap {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    position: relative;
+  }
+
+  .login-wrap::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 50% 50%, rgba(0,245,160,0.05) 0%, transparent 70%),
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(0,245,160,0.025) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(0,245,160,0.025) 40px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .login-box {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 420px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    padding: 3rem 2.5rem;
+    clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .login-box::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--neon), var(--neon2));
+  }
+
+  .login-corner {
+    position: absolute;
+    top: 0; right: 0;
+    width: 20px; height: 20px;
+    background: var(--bg);
+    clip-path: polygon(0 0, 100% 0, 100% 100%);
+  }
+
+  .login-icon {
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .login-title {
+    font-family: var(--font-head);
+    font-size: 1.3rem;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-align: center;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+    background: linear-gradient(90deg, var(--neon), var(--neon2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .login-sub {
+    text-align: center;
+    font-size: 0.8rem;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 2.5rem;
+  }
+
+  .field-wrap {
+    position: relative;
+    margin-bottom: 1rem;
+  }
+
+  .field-label {
+    font-family: var(--font-head);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--neon);
+    text-transform: uppercase;
+    margin-bottom: 0.35rem;
+    display: block;
+  }
+
+  .login-box input {
+    width: 100%;
+    background: var(--bg3);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 0.8rem 1rem;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .login-box input:focus {
+    border-color: var(--neon);
+    background: rgba(0, 245, 160, 0.03);
+  }
+
+  .login-box input::placeholder { color: var(--muted); }
+
+  .login-btn {
+    width: 100%;
+    margin-top: 1.5rem;
+    background: transparent;
+    color: var(--neon);
+    border: 1px solid var(--neon);
+    padding: 0.85rem;
+    font-family: var(--font-head);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    transition: color 0.25s;
+  }
+
+  .login-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--neon);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s;
+    z-index: 0;
+  }
+
+  .login-btn:hover { color: var(--bg); }
+  .login-btn:hover::before { transform: scaleX(1); }
+  .login-btn span { position: relative; z-index: 1; }
+
+  .error-msg {
+    display: none;
+    background: rgba(226, 75, 74, 0.1);
+    border: 1px solid rgba(226, 75, 74, 0.3);
+    color: #f09595;
+    padding: 0.7rem 1rem;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    letter-spacing: 0.05em;
+    text-align: center;
+  }
+
+  .back-link {
+    display: block;
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .back-link:hover { color: var(--neon); }
+</style>
+</head>
+<body>
+
+<div class="login-wrap">
+  <div class="login-box">
+    <div class="login-corner"></div>
+
+    <div class="login-icon">🔐</div>
+    <h1 class="login-title">Admin Access</h1>
+    <p class="login-sub">// Restricted Area</p>
+
+    <div class="field-wrap">
+      <label class="field-label" for="email">Email Address</label>
+      <input type="email" id="email" placeholder="admin@gamingcafe.com" required autocomplete="off">
+    </div>
+
+    <div class="field-wrap">
+      <label class="field-label" for="password">Password</label>
+      <input type="password" id="password" placeholder="••••••••" required>
+    </div>
+
+    <button class="login-btn" onclick="doLogin()">
+      <span>LOGIN →</span>
+    </button>
+
+    <div class="error-msg" id="errorMsg">⚠ Invalid credentials. Access denied.</div>
+
+    <a class="back-link" href="index.html">← Return to Homepage</a>
+  </div>
+</div>
+
+<script src="admin-login.js"></script>
+
+<script>
+
+async function doLogin() {
+
+  const email =
+  document.getElementById('email').value.trim();
+
+  const password =
+  document.getElementById('password').value;
+
+  const err =
+  document.getElementById('errorMsg');
+
+  if(!email || !password){
+
+    err.textContent =
+    '⚠ Please fill in all fields.';
+
+    err.style.display = 'block';
+    return;
+  }
+
+  try{
+
+    const res = await fetch(
+      'http://localhost:5000/api/admin/login',
+      {
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json'
+        },
+        body:JSON.stringify({
+          email,
+          password
+        })
+      }
+    );
+
+    const data = await res.json();
+
+    if(data.token){
+
+      localStorage.setItem(
+        'token',
+        data.token
+      );
+
+      window.location.href =
+      'admin.html';
+
+    }else{
+
+      err.textContent =
+      '⚠ Invalid Email or Password';
+
+      err.style.display =
+      'block';
+
+    }
+
+  }catch(error){
+
+    err.textContent =
+    '⚠ Server Connection Failed';
+
+    err.style.display =
+    'block';
+
+  }
+
+}
+
+document.addEventListener(
+'keydown',
+e => {
+
+  if(e.key === 'Enter'){
+
+    doLogin();
+
+  }
+
+});
+
+</script>
+
+</body>
+</html>

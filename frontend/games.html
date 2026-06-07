@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book Your Slot — GAMING JUNCTION</title>
+
+<link rel="stylesheet" href="style.css">
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<style>
+
+.empty-state{
+text-align:center;
+padding:5rem 2rem;
+color:var(--muted);
+}
+
+.empty-state .empty-icon{
+font-size:3rem;
+margin-bottom:1rem;
+}
+
+.empty-state h3{
+font-family:var(--font-head);
+font-size:1rem;
+letter-spacing:0.1em;
+text-transform:uppercase;
+color:var(--muted);
+margin-bottom:0.5rem;
+}
+
+.empty-state p{
+font-size:0.9rem;
+}
+
+.loading-state{
+text-align:center;
+padding:5rem 2rem;
+color:var(--muted);
+font-family:var(--font-head);
+font-size:0.75rem;
+letter-spacing:0.2em;
+text-transform:uppercase;
+}
+
+.loader-dot{
+display:inline-block;
+animation:blink 1.2s infinite;
+}
+
+.loader-dot:nth-child(2){
+animation-delay:0.2s;
+}
+
+.loader-dot:nth-child(3){
+animation-delay:0.4s;
+}
+
+@keyframes blink{
+
+0%,80%,100%{
+opacity:0.2;
+}
+
+40%{
+opacity:1;
+}
+
+}
+
+.slot-select-label{
+font-family:var(--font-head);
+font-size:0.55rem;
+letter-spacing:0.2em;
+color:var(--neon2);
+text-transform:uppercase;
+display:block;
+margin-bottom:0.3rem;
+}
+
+.game-select-wrap{
+margin-bottom:0.8rem;
+}
+
+.user-form{
+width:min(900px,92%);
+margin:2rem auto;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:1rem;
+}
+
+.user-form input{
+padding:1rem;
+border:none;
+outline:none;
+border-radius:12px;
+background:#111;
+color:white;
+font-size:1rem;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<nav>
+
+<h1>
+<a
+href="index.html"
+style="text-decoration:none;background:linear-gradient(90deg,#00f5a0,#00d4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;"
+>
+⚡ GAMING JUNCTION
+</a>
+</h1>
+
+<a href="index.html">← BACK</a>
+
+</nav>
+
+<h1 class="heading">
+BOOK YOUR SLOT
+</h1>
+
+<p class="heading-sub">
+// Select Game · Choose Time · Pay & Play
+</p>
+
+
+<!-- USER DETAILS -->
+
+<div class="user-form">
+
+<input
+type="text"
+id="userName"
+placeholder="Enter Your Name"
+required
+>
+
+<input
+type="text"
+id="userPhone"
+placeholder="Enter Your Phone Number"
+required
+>
+
+<input
+type="date"
+id="bookingDate"
+required
+>
+
+</div>
+
+
+<!-- MAIN CONTENT -->
+
+<div class="booking-section" id="mainContent">
+
+<div class="loading-state">
+
+Loading games
+
+<span class="loader-dot">.</span>
+<span class="loader-dot">.</span>
+<span class="loader-dot">.</span>
+
+</div>
+
+</div>
+
+
+<footer>
+
+&copy; 2025 GAMING JUNCTION
+&nbsp;|&nbsp;
+Open 10AM – 11PM Daily
+
+</footer>
+
+
+<script>
+
+// BACKEND URL
+const API_BASE =
+'http://localhost:5000';
+
+
+// DATE MIN TODAY
+document.getElementById(
+'bookingDate'
+).min =
+new Date()
+.toISOString()
+.split('T')[0];
+
+
+// ALL SLOTS
+const ALL_SLOTS = [
+
+'10:00 AM – 11:00 AM',
+'11:00 AM – 12:00 PM',
+'12:00 PM – 1:00 PM',
+'1:00 PM – 2:00 PM',
+'2:00 PM – 3:00 PM',
+'3:00 PM – 4:00 PM',
+'4:00 PM – 5:00 PM',
+'5:00 PM – 6:00 PM',
+'6:00 PM – 7:00 PM',
+'7:00 PM – 8:00 PM',
+'8:00 PM – 9:00 PM',
+'9:00 PM – 10:00 PM'
+
+];
+
+
+// VALID SLOT CHECK
+function isValidSlot(s){
+
+return /\d/.test(s)
+&& /am|pm/i.test(s);
+
+}
+
+
+// CATEGORY ICONS
+const CAT_ICONS = {
+
+pc:'🖥️',
+ps4:'🎮',
+ps5:'🕹️',
+vr:'🥽',
+racing:'🏎️',
+xbox:'🎮',
+switch:'🕹️',
+mobile:'📱'
+
+};
+
+
+// GET ICON
+function getCatIcon(cat){
+
+const key =
+(cat || '')
+.toLowerCase()
+.replace(/\s+/g,'');
+
+for(const k in CAT_ICONS){
+
+if(key.includes(k))
+return CAT_ICONS[k];
+
+}
+
+return '🎮';
+
+}
+
+
+// GROUP CATEGORY
+function groupByCategory(games){
+
+return games.reduce((acc,g)=>{
+
+const cat =
+(g.category || 'Other')
+.trim();
+
+if(!acc[cat])
+acc[cat]=[];
+
+acc[cat].push(g);
+
+return acc;
+
+},{});
+
+}
+
+
+// LOAD GAMES
+async function loadGames(){
+
+const container =
+document.getElementById(
+'mainContent'
+);
+
+try{
+
+const res =
+await fetch(
+`${API_BASE}/api/games/all`
+);
+
+if(!res.ok){
+
+throw new Error(
+'Server error: ' + res.status
+);
+
+}
+
+const games =
+await res.json();
+
+renderGames(games,container);
+
+}catch(err){
+
+container.innerHTML = `
+
+<div class="empty-state">
+
+<div class="empty-icon">
+⚠️
+</div>
+
+<h3>
+Could Not Load Games
+</h3>
+
+<p>
+
+Backend se connect nahi ho pa raha.
+
+<br><br>
+
+${err.message}
+
+</p>
+
+</div>
+
+`;
+
+}
+
+}
+
+
+// RENDER GAMES
+function renderGames(games,container){
+
+if(!games.length){
+
+container.innerHTML = `
+
+<div class="empty-state">
+
+<div class="empty-icon">
+🎮
+</div>
+
+<h3>
+No Games Available
+</h3>
+
+<p>
+Admin ne abhi koi game nahi daala.
+</p>
+
+</div>
+
+`;
+
+return;
+
+}
+
+const grouped =
+groupByCategory(games);
+
+let html='';
+
+Object.entries(grouped)
+.forEach(([category,catGames])=>{
+
+const anchor =
+category.toLowerCase()
+.replace(/\s+/g,'-');
+
+const icon =
+getCatIcon(category);
+
+html += `
+<div
+class="category-label"
+id="${anchor}"
+>
+
+${icon} ${category}
+
+</div>
+`;
+
+html += `
+<div class="booking-grid">
+`;
+
+catGames.forEach((game,idx)=>{
+
+const slotId =
+`slot-${anchor}-${idx}`;
+
+let slots =
+ALL_SLOTS;
+
+if(
+game.time
+&&
+game.time.trim()
+.toLowerCase() !== 'all'
+){
+
+const custom =
+game.time
+.split(',')
+.map(s=>s.trim())
+.filter(isValidSlot);
+
+if(custom.length > 0){
+
+slots = custom;
+
+}
+
+}
+
+const slotOptions =
+slots.map(s=>
+
+`<option value="${s}">
+${s}
+</option>`
+
+).join('');
+
+const safeTitle =
+game.title.replace(/'/g,"\\'");
+
+html += `
+
+<div class="booking-card">
+
+<div class="bc-corner"></div>
+
+<h2>
+${icon} ${game.title}
+</h2>
+
+<div class="bc-price">
+
+₹${game.price}
+
+<small>/ hour</small>
+
+</div>
+
+<div class="game-select-wrap">
+
+<span class="slot-select-label">
+
+// Select Time Slot
+
+</span>
+
+<select id="${slotId}">
+
+<option value="">
+— Choose a slot —
+</option>
+
+${slotOptions}
+
+</select>
+
+</div>
+
+<button
+class="btn-book"
+onclick="bookNow(
+'${safeTitle}',
+${game.price},
+'${slotId}',
+'${game.category}'
+)"
+
+<span>
+BOOK SLOT
+</span>
+
+</button>
+
+</div>
+
+`;
+
+});
+
+html += `</div>`;
+
+});
+
+container.innerHTML = html;
+
+}
+
+
+// BOOK NOW
+function bookNow(
+gameName,
+price,
+slotId,
+gameCategory,
+){
+
+const slot =
+document.getElementById(
+slotId
+)?.value;
+
+
+// SLOT CHECK
+if(!slot){
+
+alert(
+'Please select a time slot first!'
+);
+
+return;
+
+}
+
+
+// USER VALIDATION
+const userName =
+document.getElementById(
+'userName'
+).value;
+
+const userPhone =
+document.getElementById(
+'userPhone'
+).value;
+
+if(!userName || !userPhone){
+
+alert(
+'Please enter your details'
+);
+
+return;
+
+}
+
+
+// DATE CHECK
+const bookingDate =
+document.getElementById(
+'bookingDate'
+).value;
+
+if(!bookingDate){
+
+alert(
+'Please select booking date'
+);
+
+return;
+
+}
+
+
+// AUTO SEAT
+const seat =
+gameName.replace(/\s+/g,'')
++ '-1';
+
+
+// LOCK SLOT
+fetch(
+
+`${API_BASE}/api/bookings/lock`,
+
+{
+
+method:'POST',
+
+headers:{
+'Content-Type':'application/json'
+},
+
+body:JSON.stringify({
+
+name:userName,
+phone:userPhone,
+
+game:gameName,
+category:gameCategory,
+
+seat:seat,
+slot:slot,
+date:bookingDate,
+amount:price
+
+})
+
+}
+
+)
+
+.then(res=>res.json())
+
+.then(async(data)=>{
+
+
+// SLOT RESERVED
+if(
+data.message ===
+'Slot Already Reserved'
+){
+
+alert(
+'❌ This slot is already reserved by another user.'
+);
+
+return;
+
+}
+
+
+// SAVE ID
+localStorage.setItem(
+
+'bookingId',
+
+data.booking._id
+
+);
+
+
+// DEMO MODE DIRECT CONFIRM
+
+if(confirm(
+
+`⚡ Demo Booking
+
+Game: ${gameName}
+
+Slot: ${slot}
+
+Date: ${bookingDate}
+
+Amount: ₹${price}
+
+Confirm Booking?`
+
+)){
+
+const bookingId =
+localStorage.getItem(
+'bookingId'
+);
+
+await fetch(
+
+`${API_BASE}/api/bookings/confirm/${bookingId}`,
+
+{
+method:'PUT'
+}
+
+);
+
+alert(
+
+`✅ Booking Confirmed!
+
+🎮 Game: ${gameName}
+
+📅 Date: ${bookingDate}
+
+⏰ Slot: ${slot}`
+
+);
+
+}
+
+})
+
+.catch(err=>{
+
+console.log(err);
+
+alert('Server Error');
+
+});
+
+}
+
+
+// INIT
+loadGames();
+
+</script>
+
+</body>
+</html>

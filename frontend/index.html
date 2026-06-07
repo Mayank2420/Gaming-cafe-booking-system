@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gaming JUNCTION — Next Level Gaming</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav>
+  <h1>⚡ GAMING JUNCTION</h1>
+  <a href="games.html">BOOK NOW</a>
+</nav>
+<section class="hero">
+  <div class="hero-overlay">
+    <h1>⚡ GAMING JUNCTION</h1>
+    <p>PS5 • Gaming PCs • VR • Racing Simulators</p>
+    <a href="games.html" class="hero-btn">BOOK NOW</a>
+  </div>
+</section>
+<section class="hero">
+  <p class="hero-tag">// Lucknow's Premier Gaming Arena</p>
+  <h2>Experience<span>Next Level<br>Gaming</span></h2>
+  <p>PS5 &nbsp;•&nbsp; PC &nbsp;•&nbsp; VR &nbsp;•&nbsp; Racing Simulator</p>
+</section>
+
+<div class="features">
+  <div class="feature-item"><span>⚡</span> Ultra-Fast Internet</div>
+  <div class="feature-item"><span>🎧</span> Pro Audio Setup</div>
+  <div class="feature-item"><span>❄️</span> AC Environment</div>
+  <div class="feature-item"><span>🕹️</span> Latest Titles</div>
+  <div class="feature-item"><span>☕</span> Snacks & Drinks</div>
+</div>
+
+<section class="cards-section">
+  <p class="section-label">// Choose Your Platform</p>
+  <h2 class="section-title">Our Stations</h2>
+
+  <div class="cards-grid">
+
+    <a class="card" href="games.html#pc">
+      <span class="card-icon">🖥️</span>
+      <h3>PC Gaming</h3>
+      <p class="card-desc">RTX 4070 · 165Hz Monitor · Mechanical KB</p>
+      <div class="card-price">₹120 <span>/ hour</span></div>
+      <div class="card-arrow">→</div>
+      <div class="card-corner"></div>
+    </a>
+
+    <a class="card" href="games.html#ps4">
+      <span class="card-icon">🎮</span>
+      <h3>PS4</h3>
+      <p class="card-desc">Full Game Library · DualShock 4 · 4K TV</p>
+      <div class="card-price">₹100 <span>/ hour</span></div>
+      <div class="card-arrow">→</div>
+      <div class="card-corner"></div>
+    </a>
+
+    <a class="card" href="games.html#ps5">
+      <span class="card-icon">🕹️</span>
+      <h3>PS5</h3>
+      <p class="card-desc">DualSense · 4K 120fps · Haptic Feedback</p>
+      <div class="card-price">₹150 <span>/ hour</span></div>
+      <div class="card-arrow">→</div>
+      <div class="card-corner"></div>
+    </a>
+
+    <a class="card" href="games.html#vr">
+      <span class="card-icon">🥽</span>
+      <h3>VR</h3>
+      <p class="card-desc">Meta Quest 3 · Full Body Tracking · 360°</p>
+      <div class="card-price">₹250 <span>/ hour</span></div>
+      <div class="card-arrow">→</div>
+      <div class="card-corner"></div>
+    </a>
+
+  </div>
+</section>
+
+<footer>
+  <span id="admin-trigger" style="cursor:default;user-select:none;">&copy; 2026 GAMING JUNCTION</span>
+  &nbsp;|&nbsp; Open 10AM – 11PM Daily
+</footer>
+
+<script>
+// Secret: click the copyright symbol 5 times within 3 seconds → admin login
+(function(){
+  let clicks = 0, timer;
+  document.getElementById('admin-trigger').addEventListener('click', () => {
+    clicks++;
+    clearTimeout(timer);
+    if (clicks >= 3) { window.location.href = 'admin-login.html'; clicks = 0; return; }
+    timer = setTimeout(() => { clicks = 0; }, 3000);
+  });
+})();
+</script>
+
+</body>
+</html>
