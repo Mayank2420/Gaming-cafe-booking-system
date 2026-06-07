@@ -4,7 +4,7 @@
 // ══════════════════════════════════════════════
 
 // ── CONFIG: apna backend URL yahan set karo ──
-const API_BASE = 'http://localhost:5000';
+const API_BASE = 'https://gaming-cafe-booking-system.onrender.com/api';
 
 // ══════════════════════════════════════════════
 //  FETCH HELPERS
@@ -23,7 +23,7 @@ async function apiFetch(path, options = {}) {
 // ══════════════════════════════════════════════
 async function fetchGames() {
   try {
-    return await apiFetch('/api/games/all');
+    return await apiFetch('/games/all');
   } catch (err) {
     console.error('Games fetch error:', err);
     return [];
