@@ -18,7 +18,9 @@ app.use('/api/bookings', require('./routes/bookingRoutes'));
 app.use('/api/payment', require('./routes/paymentRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/games', require('./routes/gameRoutes'));
-
+app.get('/', (req, res) => {
+  res.send('Gaming Cafe API is running');
+});
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, ()=>{
@@ -58,7 +60,5 @@ console.log(
 console.log(err);
 
 }
-app.get('/', (req, res) => {
-  res.send('Gaming Cafe API is running');
-});
+
 },60000);
